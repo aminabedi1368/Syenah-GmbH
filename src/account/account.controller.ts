@@ -1,8 +1,7 @@
-import { Controller, Post, Body, Param, Get, BadRequestException, Logger, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, BadRequestException, Logger, UseGuards } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiBody, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
-import { Request } from 'express';
 
 @ApiTags('accounts')
 @ApiBearerAuth()
@@ -60,39 +59,6 @@ export class AccountController {
         }
     }
 
-    @ApiOperation({ summary: 'Transfer amount between accounts owned by the authenticated user' })
-    @ApiBody({
-        schema: {
-            type: 'object',
-            properties: {
-                toId: { type: 'number' },
-                amount: { type: 'number' },
-            },
-            required: ['toId', 'amount']
-        },
-    })
-    @ApiResponse({ status: 200, description: 'Transfer completed successfully' })
-    @ApiResponse({ status: 400, description: 'Invalid input data' })
-    @ApiResponse({ status: 500, description: 'Internal server error' })
-    @Post('transfer/own')
-    async transferOwnAccount(
-        @Req() req: Request,
-        @Body('toId') toId: number,
-        @Body('amount') amount: number,
-    ) {
-        const user = req.user as any; // JWT payload should have user info
-        this.logger.log(`Transfer request received: userId: ${user.sub}, toId: ${toId}, amount: ${amount}`);
-        if (!toId || !amount) {
-            throw new BadRequestException('Invalid input data');
-        }
-        try {
-            await this.accountService.transferBetweenUserAccounts(user.sub, toId, amount);
-            return { message: 'Transfer completed successfully' };
-        } catch (error) {
-            this.logger.error('Error transferring funds:', error);
-            throw error;
-        }
-    }
 
     @ApiOperation({ summary: 'Get the balance of an account' })
     @ApiParam({ name: 'accountId', type: 'number', description: 'The ID of the account' })
