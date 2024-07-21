@@ -1,0 +1,5 @@
+JWT_SECRET=VeryL0ng@ndComplicatedS3cretKeyForJWT
+DATABASE_URL=sqlite://database.sqlite
+SENTRY_DSN=your_sentry_dsn
+RATE_LIMIT=60
+CORS_ORIGIN=*
